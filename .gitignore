@@ -1,0 +1,11 @@
+# uv / venv
+.venv/
+
+# Environment / secrets
+.env
+.env.local
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
