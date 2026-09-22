@@ -9,3 +9,6 @@
 .vscode/
 .idea/
 .DS_Store
+
+# LaTeX build output
+report/build/
