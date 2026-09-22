@@ -11,12 +11,15 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 
 if __name__ == '__main__':
+    # Load the normal data
     df_train = pd.read_csv("./data/processed/original/train.csv")
     df_test = pd.read_csv("./data/processed/original/test.csv")
 
+    # Load the stratisfied data
     df_strat_train = pd.read_csv("./data/processed/grouped/train.csv")
     df_strat_test = pd.read_csv("./data/processed/grouped/test.csv")
 
+    # Two todo's for both: encode the labels to categorical features, based on trainingsdata
     label_encoder = LabelEncoder()
 
     X_train = df_train['text']
@@ -34,9 +37,9 @@ if __name__ == '__main__':
     
 
     pipe = Pipeline([
-            ('bag-of-words-vectorizer', CountVectorizer()), 
-            ('normalizer', Normalizer('l2')),
-            ('svc', MLPClassifier())
+            ('bag-of-words-vectorizer', CountVectorizer()), # Count Vectorizer ignores unknown words, creates a bag of words representation
+            ('normalizer', Normalizer('l2')), # Normalize the bag-of-words vectors to optimize distance calculations
+            ('svc', MLPClassifier()) # Apply Support Vector Machine, normal settings
     ])
 
     print(pipe
