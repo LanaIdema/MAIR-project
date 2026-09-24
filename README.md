@@ -1,5 +1,18 @@
 # MAIR-project
 
+## Overview
+* data/: contains raw and processed data
+* models/: contains pickled models that can be loaded later on
+* report/: contains latex related things for the report
+* src/: contains model definitions and pipeline classes (for step 1 and 2)
+* bert_classifiers.py: step 3
+* cli.py: script to interact with, see instructions below
+* data_preprocessing.py: parses the dataset and creates training and validation sets, populates data/
+* evaluate_models.py: cli script to evaluate the testset
+* evaluation.md: output of evaluation.py, contains validation results
+* evaluation.py: runs step 1 and 2 (so trains and evaluates rulebased model and svm + decision tree)
+* Task_4_finetuning.py: step 4 of the assignment
+
 ## Setup
 Install uv: https://docs.astral.sh/uv/getting-started/installation/
 
