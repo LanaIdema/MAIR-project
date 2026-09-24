@@ -34,6 +34,13 @@ To use the CLI, make sure to follow the following steps
     # Open CLI tool
     python3 cli.py
 
+## Evaluate
+To evaluate *dialog_acts_test.dat*, make sure to have at least run data_preprocessing.py, evaluation.py, bert_classifier.py and Task_4_finetuning.py. Then: 
+
+    python3 evaluate_models.py [path/to/dialog_acts_test.dat]
+
+It wil load every model from ./models and run inference on the set, scores accuracy and balanced accuracy.
+
 ## Git strategy (contributors)
 
 *Branch strategy:*
