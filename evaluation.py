@@ -41,14 +41,14 @@ if __name__ == '__main__':
         "./data/processed/original/test.csv"
     )
     # Load stratisfied data
-    stratisfied_data = read_data(
+    grouped_data = read_data(
         "./data/processed/grouped/train.csv", 
         "./data/processed/grouped/test.csv"
     )
 
     datasets = [
         ("regular_data", regular_data), 
-        ("stratisfied_data", stratisfied_data)
+        ("grouped_data", grouped_data)
     ]
     model_types = [
         (("rule_based_classifier", RuleBasedClassifier(rules=RULES)), False), # Step 1
