@@ -40,7 +40,7 @@ if __name__ == '__main__':
         "./data/processed/original/train.csv", 
         "./data/processed/original/test.csv"
     )
-    # Load stratisfied data
+    # Load grouped data
     grouped_data = read_data(
         "./data/processed/grouped/train.csv", 
         "./data/processed/grouped/test.csv"
