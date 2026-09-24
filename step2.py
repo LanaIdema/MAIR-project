@@ -8,6 +8,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import balanced_accuracy_score, f1_score
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
+from pickle import dump
 
 # Bag of words extractor, found on https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html
 from sklearn.feature_extraction.text import CountVectorizer
@@ -72,6 +73,10 @@ if __name__ == '__main__':
                 file.write(f"## {model_type[0]} [{dataset_name}]:\n")
                 file.write(f"- {balanced_accuracy_score(dataset["y_test"], pred_y)} balanced_accuracy\n")
                 file.write(f"- {f1_score(dataset["y_test"], pred_y, average='macro')} f1-score\n")
+
+                with open(f"./models/model_{model_type[0]}_{dataset_name}.pkl".lower().replace(" ", "_"), "wb") as f:
+                    dump(model, f, protocol=5)
+
     print("Done...")
 
             
