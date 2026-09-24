@@ -19,9 +19,11 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 
 def read_data(loc_training_data: str, loc_testing_data: str):
+    # Load data sets
     df_train = pd.read_csv(loc_training_data, keep_default_na=False)
     df_test = pd.read_csv(loc_testing_data, keep_default_na=False)
 
+    # Define train and test data
     X_train = df_train['text']
     X_test = df_test['text']
     y_train = df_train['label']
@@ -40,15 +42,16 @@ if __name__ == '__main__':
         "./data/processed/original/train.csv", 
         "./data/processed/original/test.csv"
     )
-    # Load stratisfied data
-    stratisfied_data = read_data(
+    # Load grouped data
+    grouped_data = read_data(
         "./data/processed/grouped/train.csv", 
         "./data/processed/grouped/test.csv"
     )
 
+    # Format data to dont repeat ourselves
     datasets = [
         ("regular_data", regular_data), 
-        ("stratisfied_data", stratisfied_data)
+        ("grouped_data", grouped_data)
     ]
     model_types = [
         (("rule_based_classifier", RuleBasedClassifier(rules=RULES)), False), # Step 1
@@ -58,13 +61,18 @@ if __name__ == '__main__':
 
     FILENAME = "evaluation.md"
     with open(FILENAME, "w", encoding="utf-8") as file:
+        
+        # Headers for the output MD file
         file.write("| Model | Dataset | Accuracy | Balanced Accuracy | Macro F1-score |\n")
         file.write("| --- | --- | --- | --- | --- |\n")
+
+        # All possible combinations
         for model_type, bag_of_words in model_types:
             for dataset_name, dataset in datasets:
 
                 print(f"Training and evaluating {model_type[0]} on {dataset_name} {"(bag-of-words)" if bag_of_words else ""}")
-                
+
+                # We make use of sklearn Pipeline to interface our models, so all models must comply and have .fit() and .predict() and stuff
                 pipe = None
                 
                 if bag_of_words:
@@ -74,7 +82,7 @@ if __name__ == '__main__':
                         ('normalizer', Normalizer('l2')), # Normalize the bag-of-words vectors to optimize distance calculations
                         model_type # Chain the model in the pipe
                     ])
-                else:
+                else: # This one is specifically for the rule-based one
                     pipe = Pipeline([
                         model_type
                     ])
