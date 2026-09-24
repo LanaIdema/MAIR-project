@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from transformers import (AutoModelForSequenceClassification, AutoTokenizer, EarlyStoppingCallback, Trainer, TrainingArguments, DataCollatorWithPadding, set_seed)
 import torch
+import pickle
 
 
 SEED = 42
@@ -110,7 +111,21 @@ if __name__ == '__main__':
         trainer.train()
         train_time = time.time() - start_time
 
+        best_ckpt = trainer.state.best_model_checkpoint
+        trainer.model = AutoModelForSequenceClassification.from_pretrained(best_ckpt).to(trainer.args.device)
+
         res = trainer.evaluate(test_ds, metric_key_prefix="test")
+
+        bundle = {
+            "model": trainer.model.cpu().eval(),
+            "tokenizer": tokenizer,
+            "label_encoder": label_encoder,
+            "max_length": MAX_LENGTH,
+        }
+
+        with open(f"./models/model_{type(trainer.model).__name__}_{name}.pkl".lower(), "wb") as f:
+            pickle.dump(bundle, f, protocol=5)
+
         print(name, "fine-tuned", MODEL_NAME,
               "acc:", round(res['test_accuracy'], 4),
               "balanced acc:", round(res['test_balanced_accuracy'], 4),
