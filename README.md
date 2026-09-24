@@ -4,7 +4,22 @@
 Install uv: https://docs.astral.sh/uv/getting-started/installation/
 
     uv sync
-    uv run python src/yourproject/train.py
+    # enable env
+    . .venv/bin/activate
+
+## CLI
+To use the CLI, make sure to follow the following steps
+
+    # Make sure to have the venv enabled 
+    
+    # Make sure the data is available
+    python3 data_preprocessing.py
+    
+    # Make sure to generate the included models
+    python3 evaluation.py
+
+    # Open CLI tool
+    python3 cli.py
 
 ## Git strategy (contributors)
 

@@ -8,7 +8,7 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score
 
 from pickle import dump
 
-from rulebased_rules import RULES
+from src.rulebased_rules import RULES
 
 from src.unk_handler import UnknownHandler
 from src.rule_based_classifier import RuleBasedClassifier
