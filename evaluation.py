@@ -74,7 +74,7 @@ if __name__ == '__main__':
         for model_type, bag_of_words in model_types:
             for dataset_name, dataset in datasets:
 
-                print(f"Training and evaluating {model_type[0]} on {dataset_name} {"(bag-of-words)" if bag_of_words else ""}")
+                print(f"Training and evaluating {model_type[0]} on {dataset_name} {'(bag-of-words)' if bag_of_words else ''}")
 
                 # We make use of sklearn Pipeline to interface our models, so all models must comply and have .fit() and .predict() and stuff
                 pipe = None
