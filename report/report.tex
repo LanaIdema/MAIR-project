@@ -105,103 +105,104 @@ $y\leftarrow 0$\;
 In this section, we analyze the errors made by our systems. 
 The systems we consider are the following: the rule-based baseline, 
 a support vector machine and a decision tree classifier on a bag of words representation of the utterances and on frozen pretrained embeddings.
-During the error analysis, we look at the regular test set only.
+During the error analysis, we look at the groupled split only, because we do not want data leakage to infuence the results.
 We focus on whether there are specific dialog acts and utterances that are more difficult to classify.
 In addition, we note why these dialog acts and utterances are difficult to classify.\newline
 
-
 First we look at the specific dialog acts that are more difficult to classify.
-\autoref{tab:dialog_acts_f1} shows the F1-scores for each dialog act and each system.
-We look at the F1-scores, because both the precision and recall are important to determine whether a dialog act is difficult to classify.
+We do this by looking at the recall for each dialog act and each system.
+\autoref{tab:dialog_acts_recall} shows the recall for each dialog act and each system.
+We look at the recall, because we want to determine which dialog acts are difficult to classify.
+This entails determining what proportion of the utterances of a class is correctly classified as that class.\newline
 
-The table shows that the F1-score of confirm is 0.466 for the rule-based baseline, but for the other systems, the F1-score is equal to or higher than 0.880.
-The same goes for negate, which has an F1-score of 0.160 for the rule-based baseline, but for the other systems, the F1-score is equal to or higher than 0.960.
-Negate and null show the same pattern, a relatively low F1-score for the rule-based baseline, but a high F1-score for the other systems.
+When we look at \autoref{tab:dialog_acts_recall}, we see that there are only a few dialog acts that 
+are relatively well classified by all systems. These dialog acts are 'inform', 'request' and 'thankyou'.
+These dialog acts have a relatively high number of training examples. 
+This might help the systems learn more representative patterns for the dialog acts.\newline
 
-% We can also see that a higher number of total utterances in a dialog act results in more stable 
-% F1-scores for all the systems. For example, the F1-scores of restart is 1.0 for the rule-based baseline and 
-% the decision tree on the bag-of-words representation of de utterances, while the F1-score of the 
-% support vector machine on the bag-of-words representation and on the 
+The dialog acts 'reqalts', 'confirm' and 'bye' show an overall good performance, with the exception of the 
+decision tree on the frozen pretrained embeddings. The dialog act 'negate' has the same overall good performance, besides the decision tree on the frozen pretrained embeddings, but it also 
+has a relatively low recall on for the rule-based baseline. We see that the recall of the
+decision tree on the frozen pretrained embeddings is relatively low for all dialog acts compared to the other systems.
+This suggests that the lower recall is more likely related to the combination of 
+a decision tree with the frozen pretrained embeddings.\newline
 
+We see that the 'ack' and 'restart' dialog acts are diffucult to classify for all systems except for the rule-based baseline.
+We are not able to say that these dialog act are difficult to classify, because the models were only tested on 3 and 2 utterances and 
+trained on 23 and 5 utterances.
+The rule-based baseline correctly classifed the dialog acts, this may be related to the manually defined rules
+that directly capture the patterns of the dialog acts.\newline
 
+The dialog acts 'repeat', 'hello' and 'deny' show a variation in recall between the systems.
+However, we are not able to say anything about whether the dialog acts are difficult to classify, because the systems
+were only tested on a few utterances. 
+The 'reqmore' dialog acts has no test examples, so no conclusions can be drawn from the recall. \newline
 
+The dialog act 'affirm' has a clear difference in recall for the systems. In this case, there are 103 utterances in the test set 
+and 1032 utterances in the training set, so this difference cannot only be due to the small sets. 
+This suggests that this dialog act might be difficult to classify for the support vector machine 
+on a bag of words representation of the utterances and the support vector machine and decision tree on frozen pretrained embeddings.\newline
 
-% First we look at the specific dialog acts that are more difficult to classify.
-% \autoref{tab:rule_baseline} shows the precision, recall and F1-scores for the dialog acts.
-% When we look at the recall for the rule-based baseline, we see that the recall for 
-% deny, negate, and repeat is equal to or lower than 0.5, but the precision for these dialog acts is equal to 1.0. 
+The only dialog act that performs poorly with every model and has a large enough test and training set is 'null'.
+This dialog act has 57 test utterances and 1518 training utterances. It has a recall of 0.65 or lower for every system.
+When we look at the utterances that are in the 'null' class, we see that there are fewer words that directly indicate that the utterance should be classified as 'null'.
+This might make it more difficult to classify this dialog act correctly.\newline
 
-% The precision of ack, confirm, and null are equal or lower than 0.5. 
-% For these dialog acts, the recall is equal to or higher than 0.5.
-
-% For both the dialog acts that have a low recall and the dialog acts that have a low precision,
-% we can see that the total number of utterances for these dialog acts is significantly 
-% low compared to the total number of utterances for inform for example, 
-% which has a total of 2337 utterances. 
-% This means that the rule-based baseline is not tested enough on these dialog acts to 
-% say with certainty that it can classify these dialog acts correctly or not.
-
-
-
-
-%recall --> hoeveel % van die class is gevonden 
-%precision --> hoeveel % is correct als die class
+The results show that the difficulty of classifying a dialog act depends on the system that is used to predict the dialog act.
+In addition, the small training and test sets make it difficult to draw reliable conclusions from the results.
+The recall for the dialog act 'null' is low across all systems. The recall shows that this dialog act is the most difficult to classify correctly for all systems.
 
 
 \begin{table}[htbp]
+\centering
 \floatconts
-  {tab:dialog_acts_f1}%
+  {tab:dialog_acts_recall}%
   {\caption{
-    F1-scores for the different systems on the dialog acts, on the test set. BoW denotes bag-of-words representation, 
+    The recall for the different systems on the dialog acts, on the test set. BoW denotes bag-of-words representation, 
     BERT denotes frozen pretrained DistilBERT embeddings. 
     SVM denotes support vector machine, and DT denotes decision tree.
-    The total is the total number of utterances that the specific dialog act has.
+    The \#test and \#train are the total number of utterances that the specific dialog act has in the test set and the training set.
   }}%
-  {\begin{tabular}{lcccccc}
-  \bfseries Dialog act & \bfseries Rule-based & \bfseries BoW-SVM & \bfseries BoW-DT & \bfseries BERT-SVM & \bfseries BERT-DT & \bfseries Total \\
+  {\begin{tabular}{lccccccc}
+  \bfseries Dialog act & \bfseries Rule-based & \bfseries DT BoW & 
+  \bfseries SVM BoW & \bfseries DT BERT & \bfseries SVM BERT &
+  \bfseries \#test & \bfseries \#train \\ 
   \hline
-
-  ack       & 0.667 & 0.667 & 0.571 & 0.667 & 0. & 3 \\
-  affirm    & 0.990 & 0.988 & 0.994 & 0.988 & 0. & 103 \\
-  bye       & 0.900 & 0.897 & 1.000 & 0.867 & 0. & 11 \\
-  confirm   & 0.466 & 0.880 & 0.885 & 0.933 & 0. & 19 \\
-  deny      & 0.667 & 0.889 & 1.000 & 0.857 & 0. & 2 \\
-  hello     & 1.000 & 0.960 & 1.000 & 0.917 & 0. & 9 \\
-  inform    & 0.943 & 0.987 & 0.987 & 0.987 & 0. & 2337 \\
-  negate    & 0.160 & 1.000 & 0.992 & 0.967 & 0. & 23 \\
-  null      & 0.381 & 0.945 & 0.951 & 0.944 & 0. & 57 \\
-  repeat    & 0.500 & 0.889 & 1.000 & 0.889 & 0. & 3 \\
-  reqalts   & 0.759 & 0.961 & 0.967 & 0.966 & 0. & 100 \\
-  request   & 0.851 & 0.993 & 0.993 & 0.994 & 0. & 507 \\
-  restart   & 1.000 & 0.000 & 1.000 & 0.000 & 0. & 2 \\
-  thankyou  & 0.889 & 0.997 & 0.998 & 0.995 & 0. & 20 \\
-  \end{tabular}}
-\end{table}
-
-\begin{table}[htbp]
-\floatconts
-  {tab:rule_baseline}%
-  {\caption{Rule-based baseline}}%
-  {\begin{tabular}{lllll}
-  \bfseries Dialog act & \bfseries Precision & \bfseries Recall & \bfseries F1 & \bfseries Total \\
-  ack        & 0.500000  & 1.000000  & 0.666667    & 3\\
-  affirm     & 1.000000  & 0.980583  & 0.990196    & 103\\
-  bye        & 1.000000  & 0.818182  & 0.900000    & 11\\
-  confirm    & 0.314815  & 0.894737  & 0.465753    & 19\\
-  deny       & 1.000000  & 0.500000  & 0.666667    & 2\\
-  hello      & 1.000000  & 1.000000  & 1.000000    & 9\\
-  inform     & 0.982839  & 0.906718  & 0.943245    & 2337\\
-  negate     & 1.000000  & 0.086957  & 0.160000    & 23\\
-  null       & 0.272727  & 0.631579  & 0.380952    & 57\\
-  repeat     & 1.000000  & 0.333333  & 0.500000    & 3\\
-  reqalts    & 0.747573  & 0.770000  & 0.758621    & 100\\
-  request    & 0.788235  & 0.925049  & 0.851180    & 507\\
-  restart    & 1.000000  & 1.000000  & 1.000000    & 2\\
-  thankyou   & 0.800000  & 1.000000  & 0.888889    & 20
+  ack       & 1.000 & 0.000 & 0.000 & 0.000 & 0.000 & 3 & 23 \\
+  affirm    & 0.981 & 0.981 & 0.194 & 0.107 & 0.165 & 103 & 1032 \\
+  bye       & 0.818 & 0.727 & 0.818 & 0.000 & 0.818 & 11 & 97 \\
+  confirm   & 0.895 & 0.842 & 0.842 & 0.211 & 0.737 & 19 & 133 \\
+  deny      & 0.500 & 0.500 & 0.500 & 1.000 & 0.000 & 2 & 24 \\
+  hello     & 1.000 & 0.889 & 0.889 & 0.111 & 0.556 & 9 & 75 \\
+  inform    & 0.907 & 0.952 & 0.991 & 0.721 & 0.994 & 2337 & 6978 \\
+  negate    & 0.087 & 0.826 & 1.000 & 0.435 & 0.913 & 23 & 399 \\
+  null      & 0.632 & 0.404 & 0.491 & 0.246 & 0.649 & 57 & 1518 \\
+  repeat    & 0.333 & 0.667 & 0.667 & 0.000 & 1.000 & 3 & 29 \\
+  reqalts   & 0.770 & 0.900 & 0.910 & 0.440 & 0.930 & 100 & 1535 \\
+  reqmore   & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0 & 5 \\
+  request   & 0.925 & 0.929 & 0.955 & 0.882 & 0.959 & 507 & 5721 \\
+  restart   & 1.000 & 0.000 & 0.000 & 0.000 & 0.000 & 2 & 5 \\
+  thankyou  & 1.000 & 0.700 & 0.850 & 0.850 & 0.900 & 20 & 3228 \\
   \end{tabular}}
 \end{table}
 
 
+For the dialog act 'null', we will look at some of the misclassified utterances:
+\begin{itemize}
+  \item \textbf{Text: how about} This was classified as 'reqalts', but should have been classified as 'null'.
+        Sentences that start with "how about" are typically 'reqalts', but in this case the sentence is 
+        left unfinished and should therefore be classified as 'null'. This makes classifying this utterance difficult for the systems.
+  \item \textbf{Text: what about} This was also classified as 'reqalts', but should have been classified as 'null'. This is a 
+        difficult utterance for the same reason as the preceding example: it is the start of a typical 'reqalts', but it is left unfinished.
+  \item \textbf{Text: do they have} This was classified as 'request'. Again, this is the beginning of a typical 'request', but the sentence is left unfinished.
+  \item \textbf{Text: is there any} This was classified as 'reqalts'. Again, this is the beginning of a typical 'reqalts', but the sentence is left unfinished.
+  \item \textbf{Text: type} This was classified as 'inform'. In this case, the word "type" is a common word for 'inform', but here it forms the complete sentence. Therefore, the sentence does not have meaning and should be classified as 'null'.
+        This makes classifying this as 'null' difficult.
+\end{itemize}
+
+The examples of wronly classified utterances indicate that unfinished sentences make the classification for the dialog act 'null' more difficult.
+The utterances contain words that are commonly used in a specific dialog act, but are not used in a complete sentence. This way, the systems 
+may classify the utterances based on the commonly used words, but miss that the sentence is not completed.
 
 
 \section{Discussion}
