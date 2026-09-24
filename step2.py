@@ -18,8 +18,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 # Since we are using the sklearn pipe pattern, we have to create our own _UNK_-handler
 class UnknownHandler(BaseEstimator, TransformerMixin):
-    def __init__(self):
+    def __init__(self, unknown_treshold=2):
         self.known_vocab = set()
+        self.unknown_treshold = unknown_treshold
 
     def fit(self, X, y=None):
         all_text = " ".join(X)
@@ -29,7 +30,7 @@ class UnknownHandler(BaseEstimator, TransformerMixin):
         # If above treshold
         self.known_vocab = {
             word for word, count in word_counts.items() 
-            if count > 1 #Treshold value
+            if count >= self.unknown_treshold #Treshold value
         }
         return self
 
