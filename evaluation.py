@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 
 from sklearn.pipeline import Pipeline
@@ -58,6 +60,8 @@ if __name__ == '__main__':
         (("decision_tree", TextualDecisionTreeClassifier()), True), # Step 2
         (("support_vector_machine", TextualSVMClassifier()), True), # Step 2
     ]
+
+    Path("models").mkdir(exist_ok=True)
 
     FILENAME = "evaluation.md"
     with open(FILENAME, "w", encoding="utf-8") as file:
