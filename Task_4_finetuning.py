@@ -132,3 +132,11 @@ if __name__ == '__main__':
               "macro-F1:", round(res['test_macro_f1'], 4),
               "train time (s):", round(train_time, 1))
 
+
+"""
+grouped fine-tuned distilbert-base-uncased acc: 0.9797 balanced acc: 0.7911 macro-F1: 0.785 train time (s): 511.7
+
+original fine-tuned distilbert-base-uncased acc: 0.99 balanced acc: 0.9079 macro-F1: 0.8922 train time (s): 446.0
+
+
+"""

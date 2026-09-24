@@ -59,4 +59,3 @@ Push your code to the remote (so that it is not only locally available to you)
 Force is to overwrite your branch on the remote (it is nice to know your own remote is the same as you have locally)
 
 Then you can browse to github to create a pull request...
-
