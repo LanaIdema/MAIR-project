@@ -6,13 +6,14 @@ from datasets import Dataset
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from transformers import (AutoModelForSequenceClassification, AutoTokenizer, EarlyStoppingCallback, Trainer, TrainingArguments)
+from transformers import (AutoModelForSequenceClassification, AutoTokenizer, EarlyStoppingCallback, Trainer, TrainingArguments, DataCollatorWithPadding, set_seed)
+import torch
 
 
 SEED = 42
 MODEL_NAME = "distilbert-base-uncased"
-MAX_LENGTH = 64
-VAL_SIZE = 0.1  # fraction of the training data held out for early stopping / checkpoint selection
+MAX_LENGTH = 512
+VAL_SIZE = 0.1
 
 DATASETS = {
     "original": ("./data/processed/original/train.csv", "./data/processed/original/test.csv"),
@@ -28,7 +29,7 @@ def load_data(train_path, test_path, tokenizer):
     df_train['label'] = label_encoder.fit_transform(df_train['label'])
     df_test['label'] = label_encoder.transform(df_test['label'])
 
-    # validation set comes out of the training data; the test set is only used for the final score
+
     df_train, df_val = train_test_split(
         df_train, test_size=VAL_SIZE, stratify=df_train['label'], random_state=SEED
     )
@@ -48,10 +49,9 @@ def load_model(num_labels, model_name=MODEL_NAME):
 
 
 def tokenize(dataset, tokenizer):
-    # pad/truncate every text to MAX_LENGTH tokens; str() handles empty/NaN texts
     def _tokenize(batch):
         texts = [str(x) for x in batch["text"]]
-        return tokenizer(texts, padding="max_length", truncation=True, max_length=MAX_LENGTH)
+        return tokenizer(texts, truncation=True, max_length=MAX_LENGTH)
 
     return dataset.map(_tokenize, batched=True, remove_columns=["text"])
 
@@ -71,14 +71,18 @@ def make_training_args(name):
         output_dir=f"./finetuning_results_{name}",
         eval_strategy="epoch",
         save_strategy="epoch",
-        learning_rate=5e-5,
+        save_total_limit=2,
+        learning_rate=3e-5,
+        warmup_ratio=0.1,
+        lr_scheduler_type="linear",
         per_device_train_batch_size=16,
         per_device_eval_batch_size=32,
-        num_train_epochs=20,
+        num_train_epochs=10,
         weight_decay=0.01,
         load_best_model_at_end=True,
         metric_for_best_model="macro_f1",
         greater_is_better=True,
+        fp16=torch.cuda.is_available(),
         report_to="none",
         seed=SEED,
     )
@@ -89,6 +93,7 @@ if __name__ == '__main__':
 
     for name, (train_path, test_path) in DATASETS.items():
         train_ds, val_ds, test_ds, label_encoder = load_data(train_path, test_path, tokenizer)
+        set_seed(SEED)
         model = load_model(num_labels=len(label_encoder.classes_))
 
         trainer = Trainer(
@@ -97,7 +102,8 @@ if __name__ == '__main__':
             train_dataset=train_ds,
             eval_dataset=val_ds,
             compute_metrics=compute_metrics,
-            callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
+            data_collator=DataCollatorWithPadding(tokenizer)
         )
 
         start_time = time.time()
@@ -111,21 +117,3 @@ if __name__ == '__main__':
               "macro-F1:", round(res['test_macro_f1'], 4),
               "train time (s):", round(train_time, 1))
 
-
-"""
-Model parameter size: 255.45 MB
-
-NOTE: runs 1 and 2 used the test set for early stopping / checkpoint selection,
-so their scores are somewhat optimistic. Rerun with the validation split for clean numbers.
-
-Run 1 -- best model by eval loss, no early stopping, train batch 8, eval batch 16
-original acc: 0.9872 balanced acc: 0.8797 macro-F1: 0.8684 train time (s): 2799.1 (20/20 epochs)
-grouped  acc: 0.9787 balanced acc: 0.7468 macro-F1: 0.7487 train time (s): 2735.2 (20/20 epochs)
-
-Run 2 -- best model by macro-F1, early stopping (patience 5), train batch 16, eval batch 32
-original acc: 0.99   balanced acc: 0.9692 macro-F1: 0.9644 (stopped at epoch 11/20, ~18 min)
-grouped  acc: 0.9809 balanced acc: 0.8151 macro-F1: 0.8048 (stopped at epoch 12/20, ~19 min)
-
-Larger batch size mainly speeds up training; results are otherwise similar.
-10-15 epochs are recommended for consistent results.
-"""
