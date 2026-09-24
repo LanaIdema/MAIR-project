@@ -101,6 +101,109 @@ $y\leftarrow 0$\;
 
 \section{Experiments}
 
+\subsection{Error analysis}
+In this section, we analyze the errors made by our systems. 
+The systems we consider are the following: the rule-based baseline, 
+a support vector machine and a decision tree classifier on a bag of words representation of the utterances and on frozen pretrained embeddings.
+During the error analysis, we look at the regular test set only.
+We focus on whether there are specific dialog acts and utterances that are more difficult to classify.
+In addition, we note why these dialog acts and utterances are difficult to classify.\newline
+
+
+First we look at the specific dialog acts that are more difficult to classify.
+\autoref{tab:dialog_acts_f1} shows the F1-scores for each dialog act and each system.
+We look at the F1-scores, because both the precision and recall are important to determine whether a dialog act is difficult to classify.
+
+The table shows that the F1-score of confirm is 0.466 for the rule-based baseline, but for the other systems, the F1-score is equal to or higher than 0.880.
+The same goes for negate, which has an F1-score of 0.160 for the rule-based baseline, but for the other systems, the F1-score is equal to or higher than 0.960.
+Negate and null show the same pattern, a relatively low F1-score for the rule-based baseline, but a high F1-score for the other systems.
+
+% We can also see that a higher number of total utterances in a dialog act results in more stable 
+% F1-scores for all the systems. For example, the F1-scores of restart is 1.0 for the rule-based baseline and 
+% the decision tree on the bag-of-words representation of de utterances, while the F1-score of the 
+% support vector machine on the bag-of-words representation and on the 
+
+
+
+
+% First we look at the specific dialog acts that are more difficult to classify.
+% \autoref{tab:rule_baseline} shows the precision, recall and F1-scores for the dialog acts.
+% When we look at the recall for the rule-based baseline, we see that the recall for 
+% deny, negate, and repeat is equal to or lower than 0.5, but the precision for these dialog acts is equal to 1.0. 
+
+% The precision of ack, confirm, and null are equal or lower than 0.5. 
+% For these dialog acts, the recall is equal to or higher than 0.5.
+
+% For both the dialog acts that have a low recall and the dialog acts that have a low precision,
+% we can see that the total number of utterances for these dialog acts is significantly 
+% low compared to the total number of utterances for inform for example, 
+% which has a total of 2337 utterances. 
+% This means that the rule-based baseline is not tested enough on these dialog acts to 
+% say with certainty that it can classify these dialog acts correctly or not.
+
+
+
+
+%recall --> hoeveel % van die class is gevonden 
+%precision --> hoeveel % is correct als die class
+
+
+\begin{table}[htbp]
+\floatconts
+  {tab:dialog_acts_f1}%
+  {\caption{
+    F1-scores for the different systems on the dialog acts, on the test set. BoW denotes bag-of-words representation, 
+    BERT denotes frozen pretrained DistilBERT embeddings. 
+    SVM denotes support vector machine, and DT denotes decision tree.
+    The total is the total number of utterances that the specific dialog act has.
+  }}%
+  {\begin{tabular}{lcccccc}
+  \bfseries Dialog act & \bfseries Rule-based & \bfseries BoW-SVM & \bfseries BoW-DT & \bfseries BERT-SVM & \bfseries BERT-DT & \bfseries Total \\
+  \hline
+
+  ack       & 0.667 & 0.667 & 0.571 & 0.667 & 0. & 3 \\
+  affirm    & 0.990 & 0.988 & 0.994 & 0.988 & 0. & 103 \\
+  bye       & 0.900 & 0.897 & 1.000 & 0.867 & 0. & 11 \\
+  confirm   & 0.466 & 0.880 & 0.885 & 0.933 & 0. & 19 \\
+  deny      & 0.667 & 0.889 & 1.000 & 0.857 & 0. & 2 \\
+  hello     & 1.000 & 0.960 & 1.000 & 0.917 & 0. & 9 \\
+  inform    & 0.943 & 0.987 & 0.987 & 0.987 & 0. & 2337 \\
+  negate    & 0.160 & 1.000 & 0.992 & 0.967 & 0. & 23 \\
+  null      & 0.381 & 0.945 & 0.951 & 0.944 & 0. & 57 \\
+  repeat    & 0.500 & 0.889 & 1.000 & 0.889 & 0. & 3 \\
+  reqalts   & 0.759 & 0.961 & 0.967 & 0.966 & 0. & 100 \\
+  request   & 0.851 & 0.993 & 0.993 & 0.994 & 0. & 507 \\
+  restart   & 1.000 & 0.000 & 1.000 & 0.000 & 0. & 2 \\
+  thankyou  & 0.889 & 0.997 & 0.998 & 0.995 & 0. & 20 \\
+  \end{tabular}}
+\end{table}
+
+\begin{table}[htbp]
+\floatconts
+  {tab:rule_baseline}%
+  {\caption{Rule-based baseline}}%
+  {\begin{tabular}{lllll}
+  \bfseries Dialog act & \bfseries Precision & \bfseries Recall & \bfseries F1 & \bfseries Total \\
+  ack        & 0.500000  & 1.000000  & 0.666667    & 3\\
+  affirm     & 1.000000  & 0.980583  & 0.990196    & 103\\
+  bye        & 1.000000  & 0.818182  & 0.900000    & 11\\
+  confirm    & 0.314815  & 0.894737  & 0.465753    & 19\\
+  deny       & 1.000000  & 0.500000  & 0.666667    & 2\\
+  hello      & 1.000000  & 1.000000  & 1.000000    & 9\\
+  inform     & 0.982839  & 0.906718  & 0.943245    & 2337\\
+  negate     & 1.000000  & 0.086957  & 0.160000    & 23\\
+  null       & 0.272727  & 0.631579  & 0.380952    & 57\\
+  repeat     & 1.000000  & 0.333333  & 0.500000    & 3\\
+  reqalts    & 0.747573  & 0.770000  & 0.758621    & 100\\
+  request    & 0.788235  & 0.925049  & 0.851180    & 507\\
+  restart    & 1.000000  & 1.000000  & 1.000000    & 2\\
+  thankyou   & 0.800000  & 1.000000  & 0.888889    & 20
+  \end{tabular}}
+\end{table}
+
+
+
+
 \section{Discussion}
 
 \section{Conclusion}
